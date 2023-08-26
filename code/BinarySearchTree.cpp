@@ -23,20 +23,26 @@ bool BinarySearchTree::isEmpty(){
     return root == NULL;
 }
 
+// Returns the farthest left node in the tree, representing the minimum number
 BinarySearchTree::node* BinarySearchTree::findMin(node* x){
     while(x->left != NULL)
         x = x->left;
     return x;
 }
+
+// Returns the farthest right node in the tree, representing the maximum number
 BinarySearchTree::node* BinarySearchTree::findMax(node* x){
     while(x->right != NULL)
         x = x->right;
     return x;
 }
 
+// Removes the farthest-left tree node
 void BinarySearchTree::removeMin(){
     treeDelete(findMin(root));
 }
+
+// Removes the farthest-right tree node
 void BinarySearchTree::removeMax(){
     treeDelete(findMax(root));
 }
@@ -44,6 +50,8 @@ void BinarySearchTree::removeMax(){
 
 //////////////////////////////////////////////////////////////////////////////
 //tree walks
+
+// Prints out the tree with root-first priority
 void BinarySearchTree::preOrderTreeWalk(node* x){
     if(x != NULL){
         std::cout << " " << x->key << " ";
@@ -51,6 +59,9 @@ void BinarySearchTree::preOrderTreeWalk(node* x){
         if(x->right)inOrderTreeWalk(x->right);
     }
 }
+
+// Prints out the tree going left node first, then local roots, then right nodes
+// (Sorted order of the tree)
 void BinarySearchTree::inOrderTreeWalk(node* x){
     if(x != NULL){
         if(x->left) inOrderTreeWalk(x->left);
@@ -58,6 +69,8 @@ void BinarySearchTree::inOrderTreeWalk(node* x){
         if(x->right)inOrderTreeWalk(x->right);
     }
 }
+
+// Prints out the tree with leaf-first priority
 void BinarySearchTree::postOrderTreeWalk(node* x){
     if(x != NULL){
         if(x->left) inOrderTreeWalk(x->left);
@@ -76,6 +89,9 @@ void BinarySearchTree::inOrderTreeWalk_flightName(node* x){
 }
 //////////////////////////////////////////////////////////////////////////////
 //insert, delete, and dictionary ops (with helper functions)
+
+// Inserts nodes in a tree by comparing the keys of the node to be inserted and the 
+// Current iterating node.
 void BinarySearchTree::treeInsert(int key){
     node* z = new node();
     z->key = key;
@@ -86,12 +102,16 @@ void BinarySearchTree::treeInsert(int key){
     node* y = NULL;
     node* x = root;
 
+    // if the inserting node < current tree node, go left
+    // else go right
     while(x != NULL){
         y = x;
         if(z->key < x->key)
             x = x->left;
         else x = x->right;
     }
+
+    // Links the inserted node with the adjacent existing nodes
     z->parent = y;
     if(y == NULL)
         root = z;
@@ -126,6 +146,8 @@ void BinarySearchTree::treeInsert(int key, std::string data){
     else y->right = z;
 }
 
+// Deletes the specified node in the tree
+// Updated adjacent nodes and edges
 void BinarySearchTree::treeDelete(node* z){
     if(z->left == NULL)
         transplant(z, z->right);
@@ -144,6 +166,8 @@ void BinarySearchTree::treeDelete(node* z){
     }
 }
 
+// A node successor is the node with the smallest value above the value of a given node
+// This represents the BST equivalent of the next sorted value
 BinarySearchTree::node* BinarySearchTree::treeSuccessor(node* x){
     if(x->right != NULL)
         return findMin(x->right);
@@ -157,6 +181,8 @@ BinarySearchTree::node* BinarySearchTree::treeSuccessor(node* x){
     }
 }
 
+// A node's predecessor is the node with the greatest value below the value of a given node
+// This represents the BST equivalent of the previous sorted value. 
 BinarySearchTree::node* BinarySearchTree::treePredecessor(node* x){
     if(x->left != NULL)
         return findMax(x->left);
@@ -170,6 +196,7 @@ BinarySearchTree::node* BinarySearchTree::treePredecessor(node* x){
     }
 }
 
+// Uses the BST property to binarily search for a given node or value. 
 BinarySearchTree::node* BinarySearchTree::treeSearch(node* x, int key){      //iterative search
     while(x != NULL && key != x->key){
         if(key < x->key)
@@ -179,15 +206,15 @@ BinarySearchTree::node* BinarySearchTree::treeSearch(node* x, int key){      //i
     return x;
 }
 
-
+// Utility funtion to replace a subtree with another subtree
 void BinarySearchTree::transplant(node* u, node* v){
-    if(u->parent == NULL)
-        root = v;
-    else if(u == u->parent->left)
-        u->parent->left = v;
-    else u->parent->right = v;
-    if(v != NULL)
-        v->parent = u->parent;
+    if(u->parent == NULL)           //if U has no parent
+        root = v;                   //  V is the root
+    else if(u == u->parent->left)   //else if u is a left child
+        u->parent->left = v;        //  v replaces u
+    else u->parent->right = v;      // else u is a right child, v replaces u
+    if(v != NULL)                   // if v is null
+        v->parent = u->parent;      //  v's parent becomes u's parent
 }
 
 //helper function to validate user input
@@ -205,7 +232,7 @@ bool checkCin(){
 //COMMENTED OUT FOR LINKING PURPOSES
 //
 //////////////////////////////////////////////////////////////////////////////
-///* <= remove to test methods. 
+/* <= remove to test methods. 
 int main(){
     using namespace std;
 
@@ -353,4 +380,4 @@ int main(){
         }
     }
 }
-//*/
+*/

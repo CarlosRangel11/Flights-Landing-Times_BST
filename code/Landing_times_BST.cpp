@@ -9,8 +9,12 @@
 #include <limits>
 #include "BinarySearchTree.h"
 
+// used for formatting
 #define DOTLINE  " ----------------------------------------\n"
 
+// Used to check for input validation when using Cin
+// Returns false if cin has not received the proper input type
+// Returns true otherwise
 static bool checkCin(){
     if(std::cin.fail()){
         std::cin.clear();
@@ -21,6 +25,7 @@ static bool checkCin(){
     return true;
 }
 
+// Prints the menu (duh)
 static void printMenu(){
     using namespace std;
     
@@ -36,8 +41,8 @@ static void printMenu(){
 int main(){
     using namespace std;
 
-    BinarySearchTree bst;
-    string input_s;
+    BinarySearchTree bst;       // Create BST on the stack
+    string input_s;             // Formats the char to use in switch
     char input;
     int landingTime, timeGap;
     string flightName;
@@ -45,7 +50,7 @@ int main(){
     cout << " Welcome to the Plane Landing System! \n";
     cout << DOTLINE;
         
-        
+    // Loops until timeGap is initialized
     while(true){
         cout << " To begin, please initialize the time gap for landing requests: ";
         cin >> timeGap;
@@ -68,8 +73,6 @@ int main(){
         
 
         switch(input){
-            //flush cin
-            
 
             //request a landing
             case 'A':
@@ -91,7 +94,8 @@ int main(){
 
                 bst.treeInsert(landingTime, flightName);
 
-                //checking for the timeGap (K) constraint. 
+                //checking for the timeGap (K) constraint using predecessors and successors (basically highest/lowest next values in BSTrees)
+                // If the landing time between 2 sorted nodes in the tree is less than timeGap, do not allow the plane to land
                 if(bst.treeSuccessor(bst.treeSearch(bst.root, landingTime)) != NULL)
                     if( abs(bst.treeSearch(bst.root, landingTime)->key - bst.treeSuccessor(bst.treeSearch(bst.root, landingTime))->key) < timeGap){
                         cout << "successor: " << bst.treeSearch(bst.root, landingTime)->key - bst.treeSuccessor(bst.treeSearch(bst.root, landingTime))->key << "\n";
@@ -114,50 +118,61 @@ int main(){
                 cout << "\n Plane " << bst.treeSearch(bst.root, landingTime)->data << " was added!\n";
                 break;
 
-            //withdraw landing request
-            //I was gonna do removal by searching landing time
-            //but thought that would be weird in a real setting so 
-            //i overloaded treeSearch to work with inputted strings
+            // withdraw landing request
+            // Weird dynamic because the BST works off of landing times to sort the nodes
+            // In the real world, you can still sort it like that, but for edu. purposes (assignment requirements)
+            // You input the landing time of the plane to remove, rather than the flight name. 
             case 'B':
                 cout << " Flight names and landing times:\n";
                 cout << DOTLINE;
+
+                // Prints the Tree in sorted order (inorder) to choose the landing times
                 bst.inOrderTreeWalk_flightName(bst.root);
+
+                // Validates input of the landing time to 
                 cout << " Please enter Landing time of the flight to remove: ";
                 while(true){
-                        cin >> landingTime;
-                        if(!checkCin()){
-                            cout << " ERROR:: Invalid input!\n";
-                            cout << " Please enter Landing Time (Enter an integer): ";
-                        }
-                        else break;
+                    cin >> landingTime;
+                    if(!checkCin()){
+                        cout << " ERROR:: Invalid input!\n";
+                        cout << " Please enter Landing Time (Enter an integer): ";
                     }
+                    else break;
+                }
                 
+                // Checks if that landing time has been found
                 if(bst.treeSearch(bst.root, landingTime) == NULL){
                     cout << " ERROR:: Flight Not fould!";
                     break;
                 }
+
+                // If it was found, delete the flight.
                 else {
                     cout << " Flight " << bst.treeSearch(bst.root, landingTime)->data;
                     bst.treeDelete(bst.treeSearch(bst.root, landingTime));
                     cout << " has been deleted.\n";
                 }
                 break;
-                
+
+            // Prints the current flights in the BST    
             case 'C':
                 cout << " Flight names and landing times:\n";
                 cout << DOTLINE;
                 bst.inOrderTreeWalk_flightName(bst.root);
                 break;
                 
+            // prints the menu
             case '?':
                 printMenu();
                 break;
 
+            // Exit
             case 'Q':
                 system("pause");
                 return 0;
                 break;
                 
+            // Other input besides this one
             default:
                 cout << " ERROR:: Invalid input!\n";
                 cout << " Please try again. . .\n\n";
